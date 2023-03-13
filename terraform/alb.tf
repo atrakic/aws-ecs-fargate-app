@@ -22,6 +22,7 @@ resource "aws_alb_target_group" "app" {
     path                = var.health_check_path
     unhealthy_threshold = "2"
   }
+  tags = local.tags
 }
 
 # Redirect all traffic from the ALB to the target group
