@@ -1,9 +1,10 @@
 # alb.tf
 
 resource "aws_alb" "main" {
-  name            = "${var.prefix}-load-balancer"
-  subnets         = aws_subnet.public.*.id
-  security_groups = [aws_security_group.lb.id]
+  name                       = "${var.prefix}-load-balancer"
+  subnets                    = aws_subnet.public.*.id
+  security_groups            = [aws_security_group.lb.id]
+  drop_invalid_header_fields = true
 }
 
 resource "aws_alb_target_group" "app" {

@@ -1,15 +1,14 @@
-name: ecr-build
+name: Build and Push to ECR
+
 on:
   pull_request:
     paths:
-    - src/**
+      - src/**
   push:
     paths:
-    - src/**
+      - src/**
     branches:      # array of glob patterns matching against refs/heads. Optional; defaults to all
-    - main          # triggers on pushes that contain changes in branch
-
-name: Build and Push to ECR
+      - main       # triggers on pushes that contain changes in branch
 
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
 env:
