@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+  app:
+    image: nginx-sample
+    container_name: nginx-sample
+    build:
+      context: ./src
+    ports:
+      - 8080:8080
