@@ -1,8 +1,8 @@
 version: '3.4'
 services:
   app:
-    image: nginx-sample
-    container_name: nginx-sample
+    image: app-sample
+    container_name: app-sample
     build:
       context: ./src
     ports:

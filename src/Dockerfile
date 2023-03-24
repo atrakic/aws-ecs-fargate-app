@@ -1,6 +1,14 @@
-FROM nginxinc/nginx-unprivileged:stable AS final
-WORKDIR /usr/share/nginx/html
-COPY ./default.conf /etc/nginx/conf.d/default.conf
-COPY index.html /usr/share/nginx/html
-EXPOSE 8080
-# ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# syntax=docker/dockerfile:1
+
+FROM node:18-alpine
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY ["package.json", "package-lock.json*", "./"]
+
+RUN npm install --production
+
+COPY . .
+
+CMD [ "node", "server.js" ]

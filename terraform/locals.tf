@@ -1,5 +1,0 @@
-locals {
-  tags = {
-    Environment = "demo"
-  }
-}

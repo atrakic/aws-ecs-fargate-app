@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+AWS_PROFILE=${AWS_PROFILE:-"default"}
+AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-"eu-west-1"}
+
+exec docker run \
+  --name terraform-cli \
+  --interactive \
+  --rm \
+  --workdir /tmp/workspace/terraform \
+  --volume "${HOME}/.aws":/root/.aws \
+  --volume "$(pwd)":/tmp/workspace/terraform \
+  --volume "$(cd .. && pwd)":/tmp/workspace/work \
+  --env AWS_PROFILE="${AWS_PROFILE}" \
+  --env AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}" \
+  hashicorp/terraform:latest "${@}"

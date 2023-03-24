@@ -1,4 +1,4 @@
-# auto_scaling.tf
+# app_auto_scaling.tf
 
 resource "aws_appautoscaling_target" "target" {
   service_namespace  = "ecs"
