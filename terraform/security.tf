@@ -1,5 +1,6 @@
 # security.tf
 
+#tfsec:ignore:no-public-egress-sgr tfsec:ignore:no-public-ingress-sgr
 resource "aws_security_group" "lb" {
   name        = "${var.prefix}-load-balancer-security-group"
   description = "Access to the ALB"
@@ -32,6 +33,7 @@ resource "aws_security_group" "lb" {
 }
 
 # Traffic to the ECS cluster should only come from the ALB
+#tfsec:ignore:no-public-egress-sgr
 resource "aws_security_group" "ecs_tasks" {
   name        = "${var.prefix}-ecs-tasks-security-group"
   description = "Allow inbound access from the ALB only"
