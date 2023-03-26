@@ -3,7 +3,7 @@
 #tfsec:ignore:aws-elb-alb-not-public
 resource "aws_alb" "main" {
 
-  #chekov:skip=CKV2_AWS_20: "Ensure that ALB redirects HTTP requests into HTTPS ones"
+  #checkov:skip=CKV2_AWS_20: "Ensure that ALB redirects HTTP requests into HTTPS ones"
   #checkov:skip=CKV2_AWS_28:"Ensure public facing ALB are protected by WAF"
   #checkov:skip=CKV_AWS_91: "Ensure the ELBv2 (Application/Network) has access logging enabled"
   #checkov:skip=CKV_AWS_150: "Ensure that Load Balancer has deletion protection enabled"
@@ -40,11 +40,12 @@ resource "aws_alb_target_group" "app" {
 # Redirect all traffic from the ALB to the target group
 #tfsec:ignore:http-not-used
 resource "aws_alb_listener" "app_http" {
+  #checkov:skip=CKV_AWS_2: "Ensure ALB protocol is HTTPS"
+
   count             = var.alb_tls_cert_arn == "" ? 1 : 0
   load_balancer_arn = aws_alb.main.id
-  #checkov:skip=KV_AWS_2: "Ensure ALB protocol is HTTPS"
-  port     = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
     type             = "forward"
@@ -54,11 +55,12 @@ resource "aws_alb_listener" "app_http" {
 
 # test: terraform plan -var 'alb_tls_cert_arn=arn:aws:acm:eu-west-1:123456789012:certificate/tf-acc-test-6453083910015726063'
 resource "aws_alb_listener" "app_https_redirect" {
+  #checkov:skip=CKV_AWS_2: "Ensure ALB protocol is HTTPS"
+
   count             = var.alb_tls_cert_arn == "" ? 0 : 1
   load_balancer_arn = aws_alb.main.id
-  #checkov:skip=KV_AWS_2: "Ensure ALB protocol is HTTPS"
-  port     = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
     type = "redirect"
