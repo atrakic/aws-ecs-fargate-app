@@ -41,6 +41,7 @@ resource "aws_alb_target_group" "app" {
 #tfsec:ignore:http-not-used
 resource "aws_alb_listener" "app_http" {
   #checkov:skip=CKV_AWS_2: "Ensure ALB protocol is HTTPS"
+  #checkov:skip=CKV_AWS_103: "Ensure that load balancer is using at least TLS 1.2"
 
   count             = var.alb_tls_cert_arn == "" ? 1 : 0
   load_balancer_arn = aws_alb.main.id
