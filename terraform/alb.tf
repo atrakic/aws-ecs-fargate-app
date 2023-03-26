@@ -33,17 +33,25 @@ resource "aws_alb_target_group" "app" {
 
 # Redirect all traffic from the ALB to the target group
 #tfsec:ignore:http-not-used
-resource "aws_alb_listener" "app" {
+resource "aws_alb_listener" "app_http" {
+  count             = var.alb_tls_cert_arn == "" ? 1 : 0
   load_balancer_arn = aws_alb.main.id
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.app.id
     type             = "forward"
+    target_group_arn = aws_alb_target_group.app.id
   }
+}
 
-  /*
+# test: terraform plan -var 'alb_tls_cert_arn=arn:aws:acm:eu-west-1:123456789012:certificate/tf-acc-test-6453083910015726063'
+resource "aws_alb_listener" "app_https_redirect" {
+  count             = var.alb_tls_cert_arn == "" ? 0 : 1
+  load_balancer_arn = aws_alb.main.id
+  port              = 80
+  protocol          = "HTTP"
+
   default_action {
     type = "redirect"
 
@@ -53,12 +61,11 @@ resource "aws_alb_listener" "app" {
       status_code = "HTTP_301"
     }
   }
-  */
 }
 
-/*
 # Redirect all traffic from the ALB to the target group
-resource "aws_alb_listener" "https" {
+resource "aws_alb_listener" "app_https" {
+  count             = var.alb_tls_cert_arn == "" ? 0 : 1
   load_balancer_arn = aws_alb.main.id
   port              = 443
   protocol          = "HTTPS"
@@ -71,4 +78,3 @@ resource "aws_alb_listener" "https" {
     type             = "forward"
   }
 }
-*/
