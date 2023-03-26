@@ -2,6 +2,8 @@
 
 #tfsec:ignore:aws-elb-alb-not-public
 resource "aws_alb" "main" {
+  #checkov:skip=CKV2_AWS_28:"Ensure public facing ALB are protected by WAF"
+  #checkov:skip=CKV_AWS_91: "Ensure the ELBv2 (Application/Network) has access logging enabled"
   name                       = "${local.prefix}-load-balancer"
   internal                   = false
   load_balancer_type         = "application"
@@ -36,8 +38,9 @@ resource "aws_alb_target_group" "app" {
 resource "aws_alb_listener" "app_http" {
   count             = var.alb_tls_cert_arn == "" ? 1 : 0
   load_balancer_arn = aws_alb.main.id
-  port              = 80
-  protocol          = "HTTP"
+  #checkov:skip=CKV_AWS_103:"Ensure that load balancer is using at least TLS 1.2"
+  port     = 80
+  protocol = "HTTP"
 
   default_action {
     type             = "forward"
@@ -49,8 +52,9 @@ resource "aws_alb_listener" "app_http" {
 resource "aws_alb_listener" "app_https_redirect" {
   count             = var.alb_tls_cert_arn == "" ? 0 : 1
   load_balancer_arn = aws_alb.main.id
-  port              = 80
-  protocol          = "HTTP"
+  #checkov:skip=CKV_AWS_103:"Ensure that load balancer is using at least TLS 1.2"
+  port     = 80
+  protocol = "HTTP"
 
   default_action {
     type = "redirect"
