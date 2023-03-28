@@ -26,7 +26,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN export FLASK_APP=app.py
 RUN pip install -r requirements.txt
 
-# define the port number the container should expose
-EXPOSE 8000
+env PYTHONDONTWRITEBYTECODE 1
+env PYTHONUNBUFFERED 1
 
+EXPOSE 8000
 CMD ["python", "app.py"]

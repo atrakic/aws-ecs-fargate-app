@@ -2,6 +2,7 @@
 
 AWS_PROFILE=${AWS_PROFILE:-"default"}
 AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-"eu-west-1"}
+TERRAFORM_VERSION=${TERRAFORM_VERSION:-$(cat .terraform-version)}
 
 exec docker run \
   --name terraform-cli \
@@ -13,4 +14,4 @@ exec docker run \
   --volume "$(cd .. && pwd)":/tmp/workspace/work \
   --env AWS_PROFILE="${AWS_PROFILE}" \
   --env AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}" \
-  hashicorp/terraform:latest "${@}"
+  hashicorp/terraform:"${TERRAFORM_VERSION}" "${@}"

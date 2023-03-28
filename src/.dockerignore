@@ -1,4 +1,6 @@
 tmp/
+tests/**
+README.md
 Dockerfile
 .git
 .gitignore

@@ -12,7 +12,5 @@ services:
       retries: 3
     command: gunicorn -w 3 -t 60 -b 0.0.0.0:8000 app:app
     environment:
-      - PYTHONDONTWRITEBYTECODE=1
       - FLASK_DEBUG=1
-      - PYTHONUNBUFFERED=1
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-'eu-west-1'}

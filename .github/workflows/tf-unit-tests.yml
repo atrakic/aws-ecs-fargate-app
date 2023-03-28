@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - '**/*.tpl'
-      - '**/*.py'
       - '**/*.tf'
       - '.github/workflows/tf-unit-tests.yml'
 
