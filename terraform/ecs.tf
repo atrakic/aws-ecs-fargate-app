@@ -8,4 +8,7 @@ resource "aws_ecs_cluster" "main" {
     value = "enabled"
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
 }

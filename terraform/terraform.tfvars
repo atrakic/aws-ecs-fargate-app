@@ -1,8 +1,10 @@
 
-app_image             = "ghcr.io/atrakic/octocat-app"
-app_image_version     = "latest"
-app_port              = 8080
-app_count             = "1"
-app_health_check_path = "/"
-app_fargate_cpu       = "256"
-app_fargate_memory    = "512"
+app = {
+  image             = "ghcr.io/atrakic/octocat-app"
+  image_version     = "latest"
+  port              = 8080
+  desired_count     = "1"
+  health_check_path = "/"
+  fargate_cpu       = "256"
+  fargate_memory    = "512"
+}

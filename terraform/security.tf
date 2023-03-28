@@ -7,10 +7,10 @@ resource "aws_security_group" "lb" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description      = "Ingress ${var.app_port} access for ALB"
+    description      = "Ingress ${var.app.port} access for ALB"
     protocol         = "tcp"
-    from_port        = var.app_port
-    to_port          = var.app_port
+    from_port        = var.app.port
+    to_port          = var.app.port
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
@@ -45,8 +45,8 @@ resource "aws_security_group" "ecs_tasks" {
   ingress {
     description     = "Ingress access for ECS task (but only from ALB)"
     protocol        = "tcp"
-    from_port       = var.app_port
-    to_port         = var.app_port
+    from_port       = var.app.port
+    to_port         = var.app.port
     security_groups = [aws_security_group.lb.id]
   }
 

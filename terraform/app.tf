@@ -1,7 +1,7 @@
 # app.tf
 
 locals {
-  _app_list = split("/", var.app_image)
+  _app_list = split("/", var.app.image)
   app_name  = element(local._app_list, length(local._app_list) - 1)
 }
 
@@ -10,11 +10,11 @@ data "template_file" "app" {
 
   vars = {
     app_name          = local.app_name
-    app_image         = var.app_image
-    app_image_version = var.app_image_version
-    app_port          = var.app_port
-    fargate_cpu       = var.app_fargate_cpu
-    fargate_memory    = var.app_fargate_memory
+    app_image         = var.app.image
+    app_image_version = var.app.image_version
+    app_port          = var.app.port
+    fargate_cpu       = var.app.fargate_cpu
+    fargate_memory    = var.app.fargate_memory
     aws_region        = var.aws_region
     awslogs-group     = "/ecs/${local.app_name}"
   }
@@ -25,8 +25,8 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.app_fargate_cpu
-  memory                   = var.app_fargate_memory
+  cpu                      = var.app.fargate_cpu
+  memory                   = var.app.fargate_memory
   container_definitions    = data.template_file.app.rendered
 }
 
@@ -34,30 +34,61 @@ resource "aws_ecs_service" "app" {
   name            = local.app_name
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = var.app_count
+  desired_count   = var.app.desired_count
   launch_type     = "FARGATE"
 
   network_configuration {
     security_groups = [aws_security_group.ecs_tasks.id]
-    subnets         = module.vpc.private_subnets # aws_subnet.private.*.id
-    ###assign_public_ip = true
+    subnets         = module.vpc.private_subnets
   }
 
   load_balancer {
     target_group_arn = aws_alb_target_group.app.id
     container_name   = local.app_name
-    container_port   = var.app_port
+    container_port   = var.app.port
   }
 
-  depends_on = [aws_alb_listener.app_http,
-    aws_alb_listener.app_https,
-    aws_alb_listener.app_https_redirect,
+  depends_on = [
+    aws_alb_listener.this,
   aws_iam_role_policy_attachment.ecs_task_execution_role]
 
   lifecycle {
     ignore_changes = [task_definition, desired_count]
   }
+}
 
+resource "aws_alb_target_group" "app" {
+  name        = "${local.prefix}-target-group"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = module.vpc.vpc_id
+  target_type = "ip"
+
+  health_check {
+    healthy_threshold   = "3"
+    interval            = "30"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = var.app.health_check_path
+    unhealthy_threshold = "2"
+  }
+  tags = local.tags
+}
+
+resource "aws_alb_listener_rule" "app_https" {
+  listener_arn = aws_alb_listener.this.arn
+
+  action {
+    target_group_arn = aws_alb_target_group.app.id
+    type             = "forward"
+  }
+
+  condition {
+    host_header {
+      values = ["octocat.example.com"]
+    }
+  }
 }
 
 resource "aws_service_discovery_private_dns_namespace" "app" {
