@@ -11,4 +11,4 @@ terraform "${ARGS[*]}" validate -compact-warnings
 
 terraform "${ARGS[*]}" plan -compact-warnings -out "$this_branch".tfplan
 
-#terraform "${ARGS[*]}" apply -compact-warnings -auto-approve "$this_branch".tfplan
+terraform "${ARGS[*]}" apply -compact-warnings -auto-approve "$this_branch".tfplan
