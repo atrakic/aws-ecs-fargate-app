@@ -18,6 +18,6 @@ def get_items():
     return jsonify(aws_controller.get_items())
 
 
-@app.route("/health-check")
+@app.route("/health")
 def health_check():
-    return "success"
+    return jsonify(aws_controller.list_tables())

@@ -2,7 +2,7 @@ provider "aws" {
   region = var.aws_region
   default_tags {
     tags = {
-      Terraform = true
+      Terraform = element(local.here, length(local.here) - 1)
     }
   }
 }
@@ -14,6 +14,7 @@ data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 locals {
+  here     = split("/", abspath(path.cwd)) // current working directory
   name     = "demo"
   prefix   = "tf"
   vpc_cidr = "10.0.0.0/16"

@@ -8,6 +8,7 @@ variable "aws_region" {
 
 variable "app" {
   type = object({
+    host_header       = string
     image             = string
     image_version     = string
     port              = string
@@ -17,6 +18,7 @@ variable "app" {
     fargate_memory    = string
   })
   default = {
+    host_header       = "foo.bar.com"
     image             = "nginx"
     image_version     = "latest"
     port              = "80"

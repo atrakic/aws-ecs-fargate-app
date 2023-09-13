@@ -86,7 +86,7 @@ resource "aws_alb_listener_rule" "app_https" {
 
   condition {
     host_header {
-      values = ["octocat.example.com"]
+      values = [var.app.host_header]
     }
   }
 }
