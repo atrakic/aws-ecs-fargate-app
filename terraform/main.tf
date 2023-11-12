@@ -40,10 +40,11 @@ module "vpc" {
 }
 
 module "app" {
-  source = "./ecs-fargate"
-  name   = var.name
-  prefix = "tf"
-  app    = var.app
+  source           = "./ecs-fargate"
+  name             = var.name
+  prefix           = "tf"
+  app              = var.app
+  alb_tls_cert_arn = var.alb_tls_cert_arn
 
   vpc = {
     vpc_id          = module.vpc.vpc_id

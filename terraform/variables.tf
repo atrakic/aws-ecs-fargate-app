@@ -22,3 +22,9 @@ variable "app" {
     fargate_memory    = string
   })
 }
+
+variable "alb_tls_cert_arn" {
+  description = "(Optional) The ARN of the certificate that the ALB uses for https"
+  type        = string
+  default     = ""
+}
