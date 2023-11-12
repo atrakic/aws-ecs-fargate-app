@@ -6,7 +6,7 @@ locals {
 }
 
 data "template_file" "app" {
-  template = file("./templates/ecs/app.json.tmpl")
+  template = file("${path.module}/templates/ecs/app.json.tmpl")
 
   vars = {
     app_name          = local.app_name
@@ -39,7 +39,7 @@ resource "aws_ecs_service" "app" {
 
   network_configuration {
     security_groups = [aws_security_group.ecs_tasks.id]
-    subnets         = module.vpc.private_subnets
+    subnets         = var.vpc.private_subnets
   }
 
   load_balancer {
@@ -58,10 +58,10 @@ resource "aws_ecs_service" "app" {
 }
 
 resource "aws_alb_target_group" "app" {
-  name        = "${local.prefix}-target-group"
+  name        = "${var.prefix}-target-group"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = var.vpc.vpc_id
   target_type = "ip"
 
   health_check {
@@ -73,7 +73,7 @@ resource "aws_alb_target_group" "app" {
     path                = var.app.health_check_path
     unhealthy_threshold = "2"
   }
-  tags = local.tags
+  tags = var.tags
 }
 
 resource "aws_alb_listener_rule" "app_https" {
@@ -94,5 +94,5 @@ resource "aws_alb_listener_rule" "app_https" {
 resource "aws_service_discovery_private_dns_namespace" "app" {
   name        = "${local.app_name}.${terraform.workspace}.local"
   description = "${local.app_name} private dns namespace"
-  vpc         = module.vpc.vpc_id
+  vpc         = var.vpc.vpc_id
 }

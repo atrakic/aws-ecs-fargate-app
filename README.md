@@ -9,7 +9,7 @@
 ## Usage
 
 ```
-$ vim infra/terraform.tfvars
+$ vim terraform/fixtures.tfvars
 $ make
 ```
 

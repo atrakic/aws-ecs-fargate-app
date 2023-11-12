@@ -2,9 +2,9 @@
 
 #tfsec:ignore:no-public-egress-sgr tfsec:ignore:no-public-ingress-sgr
 resource "aws_security_group" "lb" {
-  name        = "${local.prefix}-load-balancer-security-group"
+  name        = "${var.prefix}-load-balancer-security-group"
   description = "Access to the ALB"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = var.vpc.vpc_id
 
   ingress {
     description      = "Ingress ${var.app.port} access for ALB"
@@ -32,15 +32,15 @@ resource "aws_security_group" "lb" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-  tags = local.tags
+  tags = var.tags
 }
 
 # Traffic to the ECS task should only come from the ALB
 #tfsec:ignore:no-public-egress-sgr
 resource "aws_security_group" "ecs_tasks" {
-  name        = "${local.prefix}-ecs-tasks-security-group"
+  name        = "${var.prefix}-ecs-tasks-security-group"
   description = "Allow inbound access from the ALB only"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = var.vpc.vpc_id
 
   ingress {
     description     = "Ingress access for ECS task (but only from ALB)"
@@ -59,5 +59,5 @@ resource "aws_security_group" "ecs_tasks" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  tags = local.tags
+  tags = var.tags
 }

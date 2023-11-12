@@ -3,8 +3,7 @@ name: 'Terraform Unit Tests'
 on:
   push:
     paths:
-      - '**/*.tpl'
-      - '**/*.tf'
+      - 'terraform/**'
       - '.github/workflows/tf-unit-tests.yml'
 
 jobs:
@@ -52,7 +51,7 @@ jobs:
 
       # Upload results to GitHub Advanced Security
       - name: Upload SARIF file
-        if: success() || failure()
+        if: github.ref == 'refs/heads/main' && success()
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: results.sarif

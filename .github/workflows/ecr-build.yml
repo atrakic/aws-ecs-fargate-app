@@ -1,14 +1,15 @@
 name: Build and Push to ECR
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - src/**
   push:
     paths:
       - src/**
-    branches:      # array of glob patterns matching against refs/heads. Optional; defaults to all
-      - main       # triggers on pushes that contain changes in branch
+    branches:
+      - main
 
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
 env:

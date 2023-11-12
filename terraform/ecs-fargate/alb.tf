@@ -11,20 +11,20 @@ resource "aws_alb" "this" {
   #checkov:skip=CKV2_AWS_28:"Ensure public facing ALB are protected by WAF"
   #checkov:skip=CKV_AWS_91:"Ensure the ELBv2 (Application/Network) has access logging enabled"
 
-  name                       = "${local.prefix}-load-balancer"
+  name                       = "${var.prefix}-load-balancer"
   internal                   = false
   load_balancer_type         = "application"
-  subnets                    = module.vpc.public_subnets
+  subnets                    = var.vpc.public_subnets
   security_groups            = [aws_security_group.lb.id]
   drop_invalid_header_fields = true
   enable_deletion_protection = true
-  tags                       = local.tags
+  tags                       = var.tags
 }
 
 module "self_signed_cert" {
   source  = "./modules/self_signed_cert"
   enabled = var.alb_tls_cert_arn == "" ? true : false
-  tags    = local.tags
+  tags    = var.tags
 }
 
 resource "aws_alb_listener" "this" {

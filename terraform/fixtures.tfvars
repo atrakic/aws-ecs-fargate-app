@@ -1,3 +1,4 @@
+name = "demo"
 app = {
   host_header       = "foo.bar.com"
   image             = "ghcr.io/atrakic/octocat-app"

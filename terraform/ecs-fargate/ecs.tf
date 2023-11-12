@@ -1,7 +1,7 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "main" {
-  name = "${local.prefix}-cluster"
+  name = "${var.prefix}-cluster"
 
   setting {
     name  = "containerInsights"
