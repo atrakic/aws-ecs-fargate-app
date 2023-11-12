@@ -4,12 +4,6 @@ variable "name" {
   type = string
 }
 
-variable "aws_region" {
-  description = "The AWS region things are created in"
-  type        = string
-  default     = "eu-west-1"
-}
-
 variable "app" {
   type = object({
     host_header       = string
