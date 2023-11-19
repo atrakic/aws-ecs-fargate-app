@@ -36,3 +36,5 @@ clean:
 	docker-compose down --remove-orphans -v --rmi local
 	git checkout ${BASEDIR}/terraform/versions.tf
 	git checkout ${BASEDIR}/terraform/app.tf
+
+-include .env include.mk

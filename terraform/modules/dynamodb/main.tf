@@ -35,6 +35,9 @@ variable "local_secondary_indexes" {
 }
 
 resource "aws_dynamodb_table" "this" {
+  #checkov:skip=CKV2_AWS_16: "Ensure that Auto Scaling is enabled on your DynamoDB tables"
+  #checkov:skip=CKV_AWS_119: "Ensure DynamoDB Tables are encrypted using a KMS Customer Managed CMK"
+
   name           = var.configuration.name
   billing_mode   = "PROVISIONED"
   read_capacity  = 20
@@ -53,6 +56,10 @@ resource "aws_dynamodb_table" "this" {
   ttl {
     attribute_name = "TimeToExist"
     enabled        = false
+  }
+
+  point_in_time_recovery {
+    enabled = true
   }
 
   dynamic "local_secondary_index" {

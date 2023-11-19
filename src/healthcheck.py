@@ -4,7 +4,7 @@ import requests
 
 def healthcheck():
     port = os.environ.get("PORT", "8000")
-    url = "http://0.0.0.0:{}/healthcheck".format(port)
+    url = f"http://0.0.0.0:{port}/healthcheck"
     try:
         response = requests.get(url)
         if response.status_code == 200:

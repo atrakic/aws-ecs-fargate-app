@@ -1,7 +1,7 @@
-import json
 from datetime import datetime
+import json
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import aws_controller
 
 app = Flask(__name__)
@@ -29,11 +29,11 @@ def put_items():
                 "title": {"S": title},
             }
         )
-    except KeyError as E:
-        raise ValidationError("Invalid request " + E.args[0])
-        error_message = dumps({"Message": "Cannot use this request"})
-        abort(Response(error_message, 401))
+    except KeyError as e:
+        error_message = json.dumps({"Message": str(e)})
+        return Response(error_message, status=401, mimetype="application/json")
 
+    app.logger.info("%s added successfully", content)
     return jsonify(message="success", status=200)
 
 

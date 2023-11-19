@@ -18,4 +18,5 @@ curl "${opts[@]}" \
   localhost:8000/getall | python -m json.tool
 
 
+export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
 aws --no-cli-pager --endpoint-url=http://localhost:4566 dynamodb list-tables
