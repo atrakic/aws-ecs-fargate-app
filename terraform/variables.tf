@@ -8,7 +8,6 @@ variable "app" {
   type = object({
     host_header       = string
     image             = string
-    image_version     = string
     port              = string
     desired_count     = string
     health_check_path = string

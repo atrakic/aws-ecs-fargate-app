@@ -1,22 +1,20 @@
 # app.tf
 
 locals {
-  _app_list = split("/", var.app.image)
-  app_name  = element(local._app_list, length(local._app_list) - 1)
+  app_name = var.name
 }
 
 data "template_file" "app" {
   template = file("${path.module}/templates/ecs/app.json.tmpl")
 
   vars = {
-    app_name          = local.app_name
-    app_image         = var.app.image
-    app_image_version = var.app.image_version
-    app_port          = var.app.port
-    fargate_cpu       = var.app.fargate_cpu
-    fargate_memory    = var.app.fargate_memory
-    aws_region        = var.aws_region
-    awslogs-group     = "/ecs/${local.app_name}"
+    app_name       = local.app_name
+    app_image      = var.app.image
+    app_port       = var.app.port
+    fargate_cpu    = var.app.fargate_cpu
+    fargate_memory = var.app.fargate_memory
+    aws_region     = var.aws_region
+    awslogs-group  = "/ecs/${local.app_name}"
   }
 }
 

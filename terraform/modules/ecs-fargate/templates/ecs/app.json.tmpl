@@ -1,7 +1,7 @@
 [
   {
     "name": "${app_name}",
-    "image": "${app_image}:${app_image_version}",
+    "image": "${app_image}",
     "cpu": ${fargate_cpu},
     "memory": ${fargate_memory},
     "networkMode": "awsvpc",
@@ -21,8 +21,8 @@
     ],
     "environment": [
       {
-        "name": "FOO",
-        "value": "BAR"
+        "name": "TABLE",
+        "value": "${app_name}"
       }
     ]
   }

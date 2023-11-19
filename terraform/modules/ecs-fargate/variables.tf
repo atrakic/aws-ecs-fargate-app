@@ -38,7 +38,6 @@ variable "app" {
   type = object({
     host_header       = string
     image             = string
-    image_version     = string
     port              = string
     desired_count     = string
     health_check_path = string
@@ -47,8 +46,7 @@ variable "app" {
   })
   default = {
     host_header       = "foo.bar.com"
-    image             = "nginx"
-    image_version     = "latest"
+    image             = "nginx:latest"
     port              = "80"
     desired_count     = "1"
     health_check_path = "/"

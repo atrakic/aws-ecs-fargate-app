@@ -1,11 +1,10 @@
-name = "demo"
+name = "flask-app"
 app = {
-  host_header       = "foo.bar.com"
-  image             = "ghcr.io/atrakic/octocat-app"
-  image_version     = "latest"
-  port              = 8080
+  host_header       = "app.foo.bar"
+  image             = "ghcr.io/atrakic/aws-dynamodb-app:latest"
+  port              = 8000
   desired_count     = "1"
-  health_check_path = "/"
+  health_check_path = "/healthcheck"
   fargate_cpu       = "256"
   fargate_memory    = "512"
 }

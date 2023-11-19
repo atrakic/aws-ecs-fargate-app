@@ -12,12 +12,4 @@ terraform {
       version = ">= 2.2"
     }
   }
-
-  /*
-  backend "s3" {
-    bucket = "tfstate-atrakic-github-actions-state"
-    region = "eu-west-1"
-    key    = "e2e/terraform-aws-ecs-fargate/terraform.tfstate"
-  }
-  */
 }
