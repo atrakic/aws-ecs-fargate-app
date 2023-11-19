@@ -6,7 +6,7 @@ def healthcheck():
     port = os.environ.get("PORT", "8000")
     url = f"http://0.0.0.0:{port}/healthcheck"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         if response.status_code == 200:
             print("Healthcheck passed")
         else:
