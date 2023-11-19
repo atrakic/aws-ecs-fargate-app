@@ -24,7 +24,8 @@ docker:
 healthcheck:
 	docker inspect $(APP) --format "{{ (index (.State.Health.Log) 0).Output }}"
 
-test: # Testing with localstack
+test:
+	# workarround while testing without licence key for localstack
 	cp -f ${BASEDIR}/tests/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
 	rm -rf ${BASEDIR}/terraform/app.tf
 	${BASEDIR}/scripts/terraform.sh
