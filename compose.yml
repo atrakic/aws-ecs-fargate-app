@@ -11,8 +11,6 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT_URL=http://localstack:4566
-    volumes:
-      - ${PWD}/healthchecks:/healthchecks
     depends_on:
       localstack:
         condition: service_healthy
