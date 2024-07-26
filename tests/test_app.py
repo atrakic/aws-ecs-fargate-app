@@ -3,12 +3,11 @@ import requests
 
 
 def test_insert_multiple_items():
-    # Read the sample JSON file
-    with open("tests/sample.json") as f:
+    with open("tests/sample.json", encoding="utf-8") as f:
         data = json.load(f)
 
     # Send a POST request to the /add endpoint
-    response = requests.post("http://127.0.0.1:8000/add", json=data)
+    response = requests.post("http://127.0.0.1:8000/add", json=data, timeout=5)
 
     # Check the response status code
     assert response.status_code == 200
