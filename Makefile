@@ -4,9 +4,14 @@ BASEDIR=$(shell git rev-parse --show-toplevel)
 
 APP ?= flask-app
 
-.PHONY: all test docker clean healthcheck
+.PHONY: all terraform test docker clean healthcheck
 
-all: docker test
+all: terraform
+
+terraform:
+	${BASEDIR}/scripts/terraform.sh
+
+localstack: docker test
 
 docker:
 	docker-compose up --build --no-deps --remove-orphans -d
