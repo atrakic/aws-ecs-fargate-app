@@ -73,8 +73,7 @@ module "vpc" {
 }
 
 module "sns" {
-  source  = "terraform-aws-modules/sns/aws"
-  version = "6.1.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-sns.git?ref=6404f81a23544d2aba6c9c178cdf97290cee0e90"
 
   name   = var.sns_topic_name
   create = var.sns_topic_name == "" ? false : true
@@ -82,8 +81,7 @@ module "sns" {
 }
 
 module "sqs" {
-  source  = "terraform-aws-modules/sqs/aws"
-  version = "3.0.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-sqs.git?ref=8c18f70fd765db2adf31edf5fc15b3058367e5a2"
 
   name   = var.sqs_queue_name
   create = var.sqs_queue_name == "" ? false : true
