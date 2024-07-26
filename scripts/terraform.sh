@@ -24,6 +24,8 @@ else
   terraform "${ARGS[*]}" plan -compact-warnings -var-file fixtures.tfvars -out "$BASE_REF".tfplan
   terraform "${ARGS[*]}" apply -compact-warnings "$BASE_REF".tfplan
   terraform "${ARGS[*]}" show
+  terraform "${ARGS[*]}" output
+  terraform "${ARGS[*]}" state list
   # enable kill signal
   #trap - SIGINT
 fi
