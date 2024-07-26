@@ -9,7 +9,8 @@
 ## Usage
 
 ```
-$ vim terraform/fixtures.tfvars
+$ cp -f terraform/terraform.tfvars.example terraform/terraform.tfvars
+$ vim terraform/terraform.tfvars
 $ make
 ```
 

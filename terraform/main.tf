@@ -39,6 +39,24 @@ module "db" {
   tags = local.tags
 }
 
+module "app" {
+  source           = "./modules/ecs-fargate"
+  name             = var.name
+  prefix           = "tf"
+  app              = var.app
+  alb_tls_cert_arn = var.alb_tls_cert_arn
+
+  # workaround for localstack since it requires ECS with license :/
+  count = data.aws_caller_identity.current.account_id != "000000000000" ? 1 : 0
+
+  vpc = {
+    vpc_id          = module.vpc.vpc_id
+    public_subnets  = module.vpc.public_subnets
+    private_subnets = module.vpc.private_subnets
+  }
+  tags = local.tags
+}
+
 module "vpc" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=26c38a66f12e7c6c93b6a2ba127ad68981a48671" # commit hash of version 5.0.0
   name   = var.name
