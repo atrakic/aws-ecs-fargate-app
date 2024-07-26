@@ -1,4 +1,20 @@
 {
-  "artist": "Bowie",
-  "title": "Life on Mars"
+  "items": [
+    {
+      "artist": "Bowie",
+      "title": "Life on Mars"
+    },
+    {
+      "artist": "Queen",
+      "title": "Bohemian Rhapsody"
+    },
+    {
+      "artist": "Led Zeppelin",
+      "title": "Stairway to Heaven"
+    },
+    {
+      "artist": "The Beatles",
+      "title": "Hey Jude"
+    }
+  ]
 }

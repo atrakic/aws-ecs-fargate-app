@@ -21,20 +21,24 @@ def index():
 def put_items():
     content = request.json
     try:
-        artist = content["artist"]
-        title = content["title"]
-        aws_controller.put_item(
-            {
-                "artist": {"S": artist},
-                "title": {"S": title},
-            }
-        )
+        items = content.get("items", [])
+        inserted_items = []
+        for item in items:
+            artist = item["artist"]
+            title = item["title"]
+            aws_controller.put_item(
+                {
+                    "artist": {"S": artist},
+                    "title": {"S": title},
+                }
+            )
+            inserted_items.append({"artist": artist, "title": title})
     except KeyError as e:
         error_message = json.dumps({"Message": str(e)})
         return Response(error_message, status=401, mimetype="application/json")
 
     app.logger.info("%s added successfully", content)
-    return jsonify(message="success", status=200)
+    return jsonify(message="success", status=200, inserted_items=inserted_items)
 
 
 @app.route("/getall")

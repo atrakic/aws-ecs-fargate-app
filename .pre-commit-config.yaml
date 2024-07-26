@@ -11,6 +11,12 @@
 # at .git/hooks/pre-commit
 
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.83.2
     hooks:
@@ -27,9 +33,3 @@ repos:
       #- id: terraform_docs
       #  args:
       #    - '--args=--lockfile=false'
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: check-merge-conflict
-      - id: trailing-whitespace
-      - id: end-of-file-fixer

@@ -4,7 +4,7 @@ BASEDIR=$(shell git rev-parse --show-toplevel)
 
 APP ?= flask-app
 
-.PHONY: all test clean
+.PHONY: all test docker clean healthcheck
 
 all: docker test
 
@@ -25,15 +25,20 @@ healthcheck:
 	docker inspect $(APP) --format "{{ (index (.State.Health.Log) 0).Output }}"
 
 test:
-	# workarround while testing without licence key for localstack
+	pytest -v
+	# workarround since testing without a licence key for localstack
 	cp -f ${BASEDIR}/tests/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
 	rm -rf ${BASEDIR}/terraform/app.tf
+	export AWS_DEFAULT_REGION=us-east-1
+	export AWS_ACCESS_KEY_ID=test
+	export AWS_SECRET_ACCESS_KEY=test
 	${BASEDIR}/scripts/terraform.sh
 	${BASEDIR}/tests/test.sh
 
 clean:
 	${BASEDIR}/scripts/terraform.sh clean
 	rm -rf ${BASEDIR}/terraform/terraform.tfstate*
+	rm -rf ${BASEDIR}/terraform/.terraform
 	docker-compose down --remove-orphans -v --rmi local
 	git checkout ${BASEDIR}/terraform/versions.tf
 	git checkout ${BASEDIR}/terraform/app.tf

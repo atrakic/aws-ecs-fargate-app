@@ -21,3 +21,14 @@ variable "alb_tls_cert_arn" {
   type        = string
   default     = ""
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "A map of tags to add to all resources"
+}
+
+variable "prefix" {
+  type        = string
+  description = "Prefix to add to all resources"
+  default     = "flask-app"
+}

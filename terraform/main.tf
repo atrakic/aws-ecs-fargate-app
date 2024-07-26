@@ -6,7 +6,7 @@ locals {
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
   tags = {
     Workspace = terraform.workspace
-    Author    = data.aws_caller_identity.current.id
+    Owner     = data.aws_caller_identity.current.id
   }
 }
 

@@ -1,4 +1,9 @@
 name = "flask-app"
+
+tags = {
+  Fixtures = "true"
+}
+
 app = {
   host_header       = "app.foo.bar"
   image             = "ghcr.io/atrakic/aws-dynamodb-app:latest"

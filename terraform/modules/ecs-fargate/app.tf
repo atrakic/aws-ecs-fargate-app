@@ -4,20 +4,6 @@ locals {
   app_name = var.name
 }
 
-data "template_file" "app" {
-  template = file("${path.module}/templates/ecs/app.json.tmpl")
-
-  vars = {
-    app_name       = local.app_name
-    app_image      = var.app.image
-    app_port       = var.app.port
-    fargate_cpu    = var.app.fargate_cpu
-    fargate_memory = var.app.fargate_memory
-    aws_region     = var.aws_region
-    awslogs-group  = "/ecs/${local.app_name}"
-  }
-}
-
 resource "aws_ecs_task_definition" "app" {
   family                   = local.app_name
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
@@ -25,7 +11,17 @@ resource "aws_ecs_task_definition" "app" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.app.fargate_cpu
   memory                   = var.app.fargate_memory
-  container_definitions    = data.template_file.app.rendered
+  container_definitions = templatefile("${path.module}/templates/ecs/app.json.tmpl",
+    {
+      app_name       = local.app_name
+      app_image      = var.app.image
+      app_port       = var.app.port
+      fargate_cpu    = var.app.fargate_cpu
+      fargate_memory = var.app.fargate_memory
+      aws_region     = var.aws_region
+      awslogs_group  = aws_cloudwatch_log_group.app_log_group.name
+    }
+  )
 }
 
 resource "aws_ecs_service" "app" {

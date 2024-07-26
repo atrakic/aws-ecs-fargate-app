@@ -55,7 +55,7 @@ resource "aws_dynamodb_table" "this" {
 
   ttl {
     attribute_name = "TimeToExist"
-    enabled        = false
+    #enabled        = false
   }
 
   point_in_time_recovery {

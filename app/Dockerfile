@@ -10,7 +10,7 @@ COPY requirements.txt /requirements.txt
 RUN /venv/bin/pip install --disable-pip-version-check -r /requirements.txt
 
 
-FROM gcr.io/distroless/python3-debian11:nonroot as final
+FROM gcr.io/distroless/python3-debian11:nonroot AS final
 LABEL maintainer="Admir Trakic <atrakic@users.noreply.github.com>"
 COPY --from=build-venv /venv /venv
 WORKDIR /app

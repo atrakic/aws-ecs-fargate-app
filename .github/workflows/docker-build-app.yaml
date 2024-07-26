@@ -2,23 +2,17 @@ name: Build App
 
 on:
   push:
-    branches:
-      - 'main'
-    # only build when important files change
-    paths:
-      - 'src/**'
-      - '.github/workflows/docker-build-app.yaml'
-  pull_request:
-    branches:
-      - 'main'
-    # only build when important files change
-    paths:
-      - 'src/**'
-      - '.github/workflows/docker-build-app.yaml'
+    tags:
+      - '*'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Pylint"]
+    types: [completed]
 
 jobs:
-  call-docker-build:
+  docker-build:
     name: Docker Build
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: dockersamples/.github/.github/workflows/reusable-docker-build.yaml@main
     permissions:
       contents: read
@@ -52,10 +46,14 @@ jobs:
       tag-rules: |
         type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
         type=ref,event=pr
+        type=semver,pattern={{version}}
+        type=semver,pattern={{major}}.{{minor}}
+        type=semver,pattern={{major}}
+        type=sha
 
       ### path to where docker should copy files into image
       ### defaults to root of repository (.)
-      context: src
+      context: app
 
       ### Dockerfile alternate name. Default is Dockerfile (relative to context path)
       # file: Containerfile
@@ -70,3 +68,9 @@ jobs:
       ### Create a PR comment with image tags and labels
       ### defaults to false
       # comment-enable: false
+
+## Example release pipeline trigger:
+#
+# TAG="v0.0.1"
+# git tag "$TAG" -m "Release version: $TAG"
+# git push origin --tags

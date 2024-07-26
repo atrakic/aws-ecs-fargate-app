@@ -7,3 +7,9 @@ output "self" {
     last_update = timestamp()
   }, local.tags)
 }
+
+/**
+output "alb_hostname" {
+  value = module.app.alb_hostname
+}
+*/

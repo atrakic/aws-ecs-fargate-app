@@ -1,1 +1,4 @@
+terraform/.terraform.lock.hcl
+terraform/main.tfplan
+tests/__pycache__/**
 Brewfile.lock.json
