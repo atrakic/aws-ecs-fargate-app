@@ -34,10 +34,18 @@ variable "alb_tls_cert_arn" {
 variable "tags" {
   type        = map(string)
   description = "A map of tags to add to all resources"
+  default     = {}
 }
 
-variable "prefix" {
+
+variable "sqs_queue_name" {
+  description = "(Optional) The name of the SQS queue to create"
   type        = string
-  description = "Prefix to add to all resources"
-  default     = "flask-app"
+  default     = ""
+}
+
+variable "sns_topic_name" {
+  description = "(Optional) The name of the SNS topic to create"
+  type        = string
+  default     = ""
 }

@@ -1,7 +1,10 @@
 name = "flask-app"
 
+sqs_queue_name = "example"
+sns_topic_name = "example"
+
 tags = {
-  app = "${local.name}"
+  app = "flask-app"
 }
 
 app = {

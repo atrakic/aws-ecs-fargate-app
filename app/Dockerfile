@@ -27,4 +27,4 @@ HEALTHCHECK --interval=3s \
     --retries=5 \
     CMD ["/venv/bin/python3", "healthcheck.py"]
 
-ENTRYPOINT ["/venv/bin/gunicorn", "-b", ":8000", "app:app"]
+ENTRYPOINT ["/venv/bin/gunicorn", "-b", ":8000", "publisher:app"]

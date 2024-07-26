@@ -21,11 +21,6 @@ resource "aws_alb" "this" {
   tags                       = var.tags
 }
 
-module "self_signed_cert" {
-  source  = "./modules/self_signed_cert"
-  enabled = var.alb_tls_cert_arn == "" ? true : false
-  tags    = var.tags
-}
 
 resource "aws_alb_listener" "this" {
   load_balancer_arn = aws_alb.this.id

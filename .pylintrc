@@ -1,5 +1,6 @@
 [MASTER]
 disable=
+    W0511, # fixme
     C0114, # missing-module-docstring
     C0116,
     C0103,

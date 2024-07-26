@@ -30,14 +30,14 @@ healthcheck:
 
 test: docker
 	# workarround since testing without a licence key for localstack
-	cp -f ${BASEDIR}/tests/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
+	cp -f ${BASEDIR}/tests/localstack/fixtures.tf ${BASEDIR}/terraform/versions.tf
 	export AWS_DEFAULT_REGION=us-east-1
 	export AWS_ACCESS_KEY_ID=test
 	export AWS_SECRET_ACCESS_KEY=test
 	${BASEDIR}/scripts/terraform.sh
 	${BASEDIR}/tests/test.sh
 	pytest -v
-	make clean
+	#make clean
 	git checkout ${BASEDIR}/terraform/versions.tf
 
 clean:

@@ -1,0 +1,10 @@
+**/.git
+**/.gitignore
+**/.DS_Store
+**/.vscode
+**/coverage
+**/.env
+tmp/
+tests/**
+README.md
+Dockerfile

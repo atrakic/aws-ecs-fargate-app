@@ -4,16 +4,17 @@ data "aws_availability_zones" "available" {}
 locals {
   cidr = "10.0.0.0/16"
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
-  tags = {
+  tags = merge(var.tags, {
     Workspace = terraform.workspace
     Owner     = data.aws_caller_identity.current.id
-  }
+  })
 }
 
 module "db" {
   source    = "./modules/dynamodb"
   hash_key  = "artist"
   range_key = "title"
+
   configuration = {
     name = var.name
     attribute = [
@@ -26,7 +27,6 @@ module "db" {
         type = "S"
       }
     ]
-
     global_secondary_indexes = [
       {
         name            = "TitleIndex"
@@ -54,6 +54,7 @@ module "app" {
     public_subnets  = module.vpc.public_subnets
     private_subnets = module.vpc.private_subnets
   }
+
   tags = local.tags
 }
 
@@ -69,4 +70,22 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
   tags                 = local.tags
+}
+
+module "sns" {
+  source  = "terraform-aws-modules/sns/aws"
+  version = "6.1.0"
+
+  name   = var.sns_topic_name
+  create = var.sns_topic_name == "" ? false : true
+  tags   = var.tags
+}
+
+module "sqs" {
+  source  = "terraform-aws-modules/sqs/aws"
+  version = "3.0.0"
+
+  name   = var.sqs_queue_name
+  create = var.sqs_queue_name == "" ? false : true
+  tags   = var.tags
 }
