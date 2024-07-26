@@ -25,7 +25,6 @@ healthcheck:
 	docker inspect $(APP) --format "{{ (index (.State.Health.Log) 0).Output }}"
 
 test:
-	pytest -v
 	# workarround since testing without a licence key for localstack
 	cp -f ${BASEDIR}/tests/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
 	rm -rf ${BASEDIR}/terraform/app.tf
@@ -34,6 +33,7 @@ test:
 	export AWS_SECRET_ACCESS_KEY=test
 	${BASEDIR}/scripts/terraform.sh
 	${BASEDIR}/tests/test.sh
+	pytest -v
 
 clean:
 	${BASEDIR}/scripts/terraform.sh clean

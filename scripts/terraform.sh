@@ -10,16 +10,14 @@ ARGS=("-chdir=$DIR")
 export TF_IN_AUTOMATION=true
 export TF_CLI_ARGS_init="-input=false"
 
-
-if [ ! -d "$DIR"/.terraform ]; then
-  terraform "${ARGS[*]}" init -upgrade -reconfigure
-fi
-
 if [ "$1" == "clean" ]; then
   echo "$1: "
-  terraform "${ARGS[*]}" destroy -var-file fixtures.tfvars
+  terraform "${ARGS[*]}" destroy -var-file fixtures.tfvars --auto-approve
   rm -rf "{$DIR}"/.terraform
 else
+  if [ ! -d "$DIR"/.terraform ]; then
+    terraform "${ARGS[*]}" init -upgrade -reconfigure
+  fi
   terraform "${ARGS[*]}" validate -compact-warnings
   terraform "${ARGS[*]}" fmt -check -recursive
   terraform "${ARGS[*]}" plan -compact-warnings -var-file fixtures.tfvars -out "$BASE_REF".tfplan
