@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify, Response
 
 import aws_dynamodb
 import aws_sts
-import aws_sns
+# import aws_sns
 
 TABLE = os.environ.get("TABLE_NAME", "example")
 # TOPIC_ARN = os.environ.get("TOPIC_ARN",
