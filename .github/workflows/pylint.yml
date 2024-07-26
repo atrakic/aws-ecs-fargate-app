@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'app/**'
+      - '.github/workflows/pylint.yml'
+      - '**.py'
 
 jobs:
   build:
