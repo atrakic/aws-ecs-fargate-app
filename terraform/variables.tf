@@ -14,6 +14,15 @@ variable "app" {
     fargate_cpu       = string
     fargate_memory    = string
   })
+  default = {
+    host_header       = "demo.example.com"
+    image             = "nginx:latest"
+    port              = "8000"
+    desired_count     = "1"
+    health_check_path = "/"
+    fargate_cpu       = "256"
+    fargate_memory    = "512"
+  }
 }
 
 variable "alb_tls_cert_arn" {

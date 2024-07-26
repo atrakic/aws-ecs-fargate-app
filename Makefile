@@ -28,7 +28,7 @@ docker:
 healthcheck:
 	docker inspect $(APP) --format "{{ (index (.State.Health.Log) 0).Output }}"
 
-test: docker 
+test: docker
 	# workarround since testing without a licence key for localstack
 	cp -f ${BASEDIR}/tests/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
 	export AWS_DEFAULT_REGION=us-east-1
@@ -41,9 +41,11 @@ test: docker
 	git checkout ${BASEDIR}/terraform/versions.tf
 
 clean:
-	${BASEDIR}/scripts/terraform.sh clean
+	# Skip terraform destroy for now
+	##${BASEDIR}/scripts/terraform.sh clean
 	rm -rf ${BASEDIR}/terraform/terraform.tfstate*
-	rm -rf ${BASEDIR}/terraform/.terraform
+	rm -rf ${BASEDIR}/terraform/*.tfplan
+	#rm -rf ${BASEDIR}/terraform/.terraform
 	docker-compose down --remove-orphans -v --rmi local
 
 -include .env include.mk

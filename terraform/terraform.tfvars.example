@@ -1,7 +1,7 @@
 name = "flask-app"
 
 tags = {
-  Fixtures = "true"
+  app = "${local.name}"
 }
 
 app = {
