@@ -9,11 +9,10 @@ from flask import Flask, request, jsonify, Response
 
 import aws_dynamodb
 import aws_sts
-# import aws_sns
+import aws_sns
 
 TABLE = os.environ.get("TABLE_NAME", "example")
-# TOPIC_ARN = os.environ.get("TOPIC_ARN",
-#     "arn:aws:sqs:us-east-1:000000000000:flask-app")
+TOPIC_ARN = os.environ.get("TOPIC_ARN", "arn:aws:sns:us-east-1:000000000000:pub-sub")
 
 app = Flask(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -51,20 +50,18 @@ def put_items():
                     "title": {"S": title},
                 },
             )
-            # inserted_items.append({"artist": artist, "title": title})
-            logging.info("Item: %s added to db successfully", content)
+            logging.info("Item: %s added to db successfully", unique_id)
 
-            # # TODO: Publish message to SNS topic
-            # aws_sns.publish_message(
-            #     topic_arn=TOPIC_ARN,
-            #     message=json.dumps(
-            #         {
-            #             "artist": artist,
-            #             "title": title,
-            #         }
-            #     ),
-            # )
-            # logging.info("Published message to topic: %s.", TOPIC_ARN)
+            aws_sns.publish_message(
+                topic_arn=TOPIC_ARN,
+                message=json.dumps(
+                    {
+                        "artist": artist,
+                        "title": title,
+                    }
+                ),
+            )
+            logging.info("Published message to topic: %s ", TOPIC_ARN)
 
     except KeyError as e:
         error_message = json.dumps({"Message": str(e)})

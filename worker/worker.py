@@ -1,22 +1,43 @@
 import logging
 import os
 import sys
-
-# import json
-
+import json
+import boto3
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-# import aws_sqs as aws_sqs
-# import aws_dynamodb as aws_dynamodb
-# import aws_sns as aws_sns
+aws_region = os.getenv("AWS_DEFAULT_REGION", default="us-east-1")
+sqs_client = boto3.client("sqs", region_name=aws_region)
 
-# queue_url = os.getenv("QUEUE_URL", "http://localhost:4566/000000000000/flask-app")
-topic_arn = os.getenv("TOPIC_ARN", "http://localhost:4566/000000000000/flask-app")
+queue_url = os.getenv(
+    "QUEUE_URL",
+    default="http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/pub-sub",
+)
+
+
+def delete_message(message, queue_uri):
+    """Deletes a message from the specified queue"""
+    try:
+        return sqs_client.delete_message(
+            QueueUrl=queue_uri, ReceiptHandle=message.get("ReceiptHandle")
+        )
+    except boto3.ClientError:
+        logging.exception("Error deleting the message from %s}", queue_uri)
+
+
+def get_messages(queue_uri):
+    """
+    Long-polls the specified Queue, returning zero up to 10 messages.
+    """
+    messages = sqs_client.receive_message(QueueUrl=queue_uri, WaitTimeSeconds=5)
+    return messages.get("Messages", [])
 
 
 def process_message():
-    logging.info("Message sent to %s", topic_arn)
+    for message in get_messages(queue_url):
+        message_body = json.loads(message["Body"])["Message"]
+        logging.info("Message received:  %s", message_body)
+        delete_message(message, queue_url)
 
 
 if __name__ == "__main__":

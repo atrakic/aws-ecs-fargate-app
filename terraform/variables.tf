@@ -38,14 +38,8 @@ variable "tags" {
 }
 
 
-variable "sqs_queue_name" {
-  description = "(Optional) The name of the SQS queue to create"
-  type        = string
-  default     = ""
-}
-
-variable "sns_topic_name" {
-  description = "(Optional) The name of the SNS topic to create"
+variable "pub_sub_name" {
+  description = "(Optional) The name of the SQS/SNS pub-sub to create"
   type        = string
   default     = ""
 }

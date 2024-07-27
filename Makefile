@@ -11,7 +11,6 @@ all: terraform
 terraform:
 	${BASEDIR}/scripts/terraform.sh
 
-
 docker:
 	docker-compose up --build --no-deps --remove-orphans -d
 	while ! \

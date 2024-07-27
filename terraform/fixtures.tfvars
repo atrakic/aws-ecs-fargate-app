@@ -1,6 +1,5 @@
-name           = "flask-app"
-sqs_queue_name = "flask-app"
-sns_topic_name = "flask-app"
+name         = "flask-app"
+pub_sub_name = "pub-sub"
 
 tags = {
   Fixtures = "true"
