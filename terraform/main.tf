@@ -10,6 +10,26 @@ locals {
   })
 }
 
+# TODO: use foreach loop
+module "app" {
+  source           = "./modules/ecs-fargate"
+  name             = var.name
+  prefix           = "tf"
+  app              = var.app
+  alb_tls_cert_arn = var.alb_tls_cert_arn
+
+  # workaround for localstack since it requires ECS with license :/
+  count = data.aws_caller_identity.current.account_id != "000000000000" ? 1 : 0
+
+  vpc = {
+    vpc_id          = module.vpc.vpc_id
+    public_subnets  = module.vpc.public_subnets
+    private_subnets = module.vpc.private_subnets
+  }
+
+  tags = local.tags
+}
+
 module "db" {
   source    = "./modules/dynamodb"
   hash_key  = "artist"
@@ -36,25 +56,6 @@ module "db" {
       }
     ]
   }
-  tags = local.tags
-}
-
-module "app" {
-  source           = "./modules/ecs-fargate"
-  name             = var.name
-  prefix           = "tf"
-  app              = var.app
-  alb_tls_cert_arn = var.alb_tls_cert_arn
-
-  # workaround for localstack since it requires ECS with license :/
-  count = data.aws_caller_identity.current.account_id != "000000000000" ? 1 : 0
-
-  vpc = {
-    vpc_id          = module.vpc.vpc_id
-    public_subnets  = module.vpc.public_subnets
-    private_subnets = module.vpc.private_subnets
-  }
-
   tags = local.tags
 }
 
