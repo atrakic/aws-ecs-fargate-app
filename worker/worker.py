@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import json
+import botocore
 import boto3
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -21,8 +22,9 @@ def delete_message(message, queue_uri):
         return sqs_client.delete_message(
             QueueUrl=queue_uri, ReceiptHandle=message.get("ReceiptHandle")
         )
-    except boto3.ClientError:
-        logging.exception("Error deleting the message from %s}", queue_uri)
+    except botocore.exceptions.ClientError as error:
+        logging.error("Error deleting message: %s", error)
+        return None
 
 
 def get_messages(queue_uri):
