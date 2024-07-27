@@ -1,4 +1,4 @@
-name: Build App
+name: Build Subscriber Docker Image
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
       ### A list of the account/repo names for docker build. List should match what's enabled above
       ### defaults to:
       image-names: |
-        ghcr.io/atrakic/aws-app
+        ghcr.io/atrakic/${{ github.repository }}-subscriber
 
       ### REQUIRED set rules for tagging images, based on special action syntax:
       ### https://github.com/docker/metadata-action#tags-input
@@ -53,7 +53,7 @@ jobs:
 
       ### path to where docker should copy files into image
       ### defaults to root of repository (.)
-      context: app
+      context: src/subscriber
 
       ### Dockerfile alternate name. Default is Dockerfile (relative to context path)
       # file: Containerfile

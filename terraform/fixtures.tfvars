@@ -1,4 +1,4 @@
-name         = "flask-app"
+name         = "publisher"
 pub_sub_name = "pub-sub"
 
 tags = {

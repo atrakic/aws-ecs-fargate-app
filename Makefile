@@ -2,7 +2,7 @@ MAKEFLAGS += --silent
 
 BASEDIR=$(shell git rev-parse --show-toplevel)
 
-APP ?= flask-app
+APP ?= publisher
 
 .PHONY: all terraform test docker clean healthcheck
 

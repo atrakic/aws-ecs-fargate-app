@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'app/**'
+      - 'src/publisher/**'
+      - 'src/subscriber/**'
       - '.github/workflows/pylint.yml'
-      - '**.py'
 
 jobs:
   build:
