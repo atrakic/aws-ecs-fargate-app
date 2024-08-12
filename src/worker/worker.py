@@ -31,7 +31,13 @@ def get_messages(queue_uri):
     """
     Long-polls the specified Queue, returning zero up to 10 messages.
     """
-    messages = sqs_client.receive_message(QueueUrl=queue_uri, WaitTimeSeconds=5)
+
+    try:
+        messages = sqs_client.receive_message(QueueUrl=queue_uri, WaitTimeSeconds=5)
+    except botocore.exceptions.ClientError as error:
+        logging.error("Error receiving message: %s", error)
+        return []
+
     return messages.get("Messages", [])
 
 
