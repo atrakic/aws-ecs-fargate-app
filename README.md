@@ -8,12 +8,12 @@
 > Utilizes various AWS components such as SNS, SQS, DynamoDB, and ECS Fargate.
 
 ## Introduction
-This application showcases the deployment and configuration of a Fargate container to interact with AWS services like SNS, SQS, and DynamoDB.
+This messaging processing application with access to AWS services: SNS, SQS, DynamoDB and Fargatee.
 
 ## Usage flow
 - Users submit requests via a URL, as shown in [sample.json](tests/sample.json).
 - The Fargate application stores messages in the persistence layer (DynamoDB) and sends a message to a topic (AWS SNS).
-- A separate container, the worker application, receives and processes messages from the queues, deleting them when finished.
+- A separate container, the worker application, receives and processes messages from the queues, and deleting them when finished.
 
 ## Requirements
 - An AWS account

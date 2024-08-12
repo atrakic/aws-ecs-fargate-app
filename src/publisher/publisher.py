@@ -36,12 +36,15 @@ def health_check():
 @app.route("/add", methods=["POST"])
 def put_items():
     content = request.json
+
     try:
         items = content.get("items", [])
+
         for item in items:
             unique_id = str(uuid.uuid4())
             artist = item["artist"]
             title = item["title"]
+
             aws_dynamodb.put_dynamodb_item(
                 TABLE,
                 {
