@@ -33,6 +33,13 @@ jobs:
         with:
           terraform_version: "1.4.1"
 
+      - name: Start LocalStack
+        uses: LocalStack/setup-localstack@v0.2.2
+        if: github.event_name == 'pull_request'
+        with:
+          image-tag: 'latest'
+          install-awslocal: 'true'
+
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init -backend=false
@@ -43,6 +50,12 @@ jobs:
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format
         run: terraform fmt -check -recursive
+
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request'
+        run: |
+          cp -f ../tests/fixtures/terraform.tfvars .
+          terraform plan -out=tfplan
 
       # Perform a security scan of the terraform code using checkov
       - name: Run Checkov action

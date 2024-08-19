@@ -4,7 +4,7 @@ data "aws_availability_zones" "available" {}
 module "app" {
   source = "./modules/ecs-fargate"
 
-  create           = local.create_fargate_apps
+  name             = "ecs-fargate"
   prefix           = "tf"
   alb_tls_cert_arn = var.alb_tls_cert_arn
 

@@ -49,8 +49,6 @@ provider "aws" {
   default_tags {
     tags = {
       Environment = "Localstack"
-      Owner       = "Demo"
-      Project     = "Test"
     }
   }
 
