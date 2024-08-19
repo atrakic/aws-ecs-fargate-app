@@ -1,25 +1,25 @@
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
-locals {
-  cidr = "10.0.0.0/16"
-  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
-  tags = merge(var.tags, {
-    Workspace = terraform.workspace
-    Owner     = data.aws_caller_identity.current.id
-  })
-}
-
-# TODO: use foreach loop
 module "app" {
-  source           = "./modules/ecs-fargate"
-  name             = var.name
+  source = "./modules/ecs-fargate"
+
+  create           = local.create_fargate_apps
   prefix           = "tf"
-  app              = var.app
   alb_tls_cert_arn = var.alb_tls_cert_arn
 
-  # workaround for localstack since it requires ECS with license :/
-  count = data.aws_caller_identity.current.account_id != "000000000000" ? 1 : 0
+  app = { for k, v in var.fargate_apps :
+    k => {
+      name              = v.name
+      host_header       = v.host_header
+      image             = v.image
+      port              = v.port
+      health_check_path = v.health_check_path
+      desired_count     = v.desired_count
+      fargate_cpu       = v.fargate_cpu
+      fargate_memory    = v.fargate_memory
+    }
+  }
 
   vpc = {
     vpc_id          = module.vpc.vpc_id
@@ -27,7 +27,8 @@ module "app" {
     private_subnets = module.vpc.private_subnets
   }
 
-  tags = local.tags
+  depends_on = [module.vpc, module.db, module.sns, module.sqs]
+  tags       = local.tags
 }
 
 module "db" {
@@ -36,7 +37,7 @@ module "db" {
   range_key = "title"
 
   configuration = {
-    name = var.name
+    name = "${local.name}-dynamodb"
     attribute = [
       {
         name = "artist"
@@ -61,7 +62,7 @@ module "db" {
 
 module "vpc" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=2e417ad0ce830893127476436179ef483485ae84"
-  name   = var.name
+  name   = "${local.name}-vpc"
 
   cidr                 = local.cidr
   azs                  = local.azs

@@ -1,27 +1,32 @@
 # variables.tf
 
-variable "name" {
-  type = string
-}
-
-variable "app" {
-  type = object({
+variable "fargate_apps" {
+  description = "A map of fargate apps to create"
+  type = map(object({
+    name              = string
     host_header       = string
     image             = string
     port              = string
-    desired_count     = string
+    desired_count     = optional(string, "1")
     health_check_path = string
-    fargate_cpu       = string
-    fargate_memory    = string
-  })
+    fargate_cpu       = optional(string, "256")
+    fargate_memory    = optional(string, "512")
+  }))
   default = {
-    host_header       = "demo.example.com"
-    image             = "nginx:latest"
-    port              = "8000"
-    desired_count     = "1"
-    health_check_path = "/"
-    fargate_cpu       = "256"
-    fargate_memory    = "512"
+    publisher = {
+      name              = "publisher"
+      host_header       = "publisher.foo.bar"
+      image             = "ghcr.io/atrakic/aws-publisher:latest"
+      port              = 8000
+      health_check_path = "/healthcheck"
+    }
+    subscriber = {
+      name              = "subscriber"
+      image             = "ghcr.io/atrakic/aws-subscriber:latest"
+      host_header       = null
+      port              = 9999
+      health_check_path = null
+    }
   }
 }
 
@@ -36,7 +41,6 @@ variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}
 }
-
 
 variable "pub_sub_name" {
   description = "(Optional) The name of the SQS/SNS pub-sub to create"

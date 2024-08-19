@@ -8,8 +8,8 @@ output "self" {
   }, local.tags)
 }
 
-/**
-output "alb_hostname" {
-  value = module.app.alb_hostname
+/* 
+output "fargate_apps" {
+  value = formatlist("%s://%s:%s", "http", module.app.alb_dns_name, "80")
 }
 */
