@@ -2,6 +2,10 @@ data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 data "aws_region" "current" {}
 
+locals {
+  container_name = "publisher"
+  container_port = 8000
+}
 
 module "ecs" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-ecs.git?ref=3b70e1e46e1b96a2da7fbfe6e2c11d44009607f1"
@@ -11,8 +15,8 @@ module "ecs" {
 
   services = {
     ecs-demo = {
-      cpu        = 1024
-      memory     = 4096
+      cpu    = 1024
+      memory = 4096
 
       ## Task Definition
       container_definitions = {
@@ -64,12 +68,25 @@ module "ecs" {
         }
       }
 
+      ## Service Discovery
+      service_connect_configuration = {
+        namespace = aws_service_discovery_http_namespace.this[0].arn
+        service = {
+          client_alias = {
+            port     = local.container_port
+            dns_name = local.container_name
+          }
+          port_name      = local.container_name
+          discovery_name = local.container_name
+        }
+      }
+
       ## Load Balancer
       load_balancer = {
         service = {
           target_group_arn = module.alb.target_groups["publisher"].arn
-          container_name   = "publisher"
-          container_port   = "8000"
+          container_name   = local.container_name
+          container_port   = local.container_port
         }
       }
 
@@ -148,6 +165,9 @@ module "ecs" {
       }
     }
   }
+
+  depends_on = [aws_service_discovery_http_namespace.this, module.vpc,
+  module.alb, module.db, module.sns, module.sqs, module.acm, module.wildcard_cert]
   tags = local.tags
 }
 
@@ -207,7 +227,7 @@ module "alb" {
   target_groups = {
     publisher = {
       backend_protocol     = "HTTP"
-      backend_port         = 8000
+      backend_port         = local.container_port
       target_type          = "ip"
       protocol             = "HTTP"
       deregistration_delay = 5
@@ -375,5 +395,5 @@ module "wildcard_cert" {
 
   create_certificate = var.create && var.domain_name != "" ? true : false
   domain_name        = "*.${var.domain_name}"
-  zone_id = concat(data.aws_route53_zone.this.*.id, [""], )[0]
+  zone_id            = concat(data.aws_route53_zone.this.*.id, [""], )[0]
 }
