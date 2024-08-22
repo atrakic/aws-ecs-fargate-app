@@ -5,20 +5,42 @@ on:
     paths:
       - 'terraform/**'
       - '.github/workflows/tf-unit-tests.yml'
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+  release:
+    types: [published]
+
+env:
+  DEFAULT_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: localstack
+  AWS_SECRET_ACCESS_KEY: localstack
 
 jobs:
-  terraform-unit-tests:
-    name: 'Terraform Unit Tests'
+  terraform-ci:
     runs-on: ubuntu-latest
+    container: hashicorp/terraform:light
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive -diff
+        working-directory: ./terraform
+      
+  terraform-unit-tests:
+      runs-on: ubuntu-latest
+      needs: terraform-ci
+      container: hashicorp/terraform:light
 
     permissions:
       # required for all workflows
       security-events: write
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./terraform
+    services:
+      localstack:
+        image: localstack/localstack
+        ports:
+          - 4566:4566
 
     steps:
       - name: Checkout
@@ -26,48 +48,35 @@ jobs:
 
       - name: Set common environment variables
         run: cat ../.github/.env >> $GITHUB_ENV
+        working-directory: ./terraform
 
-      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: "1.4.1"
-
-      - name: Start LocalStack
-        uses: LocalStack/setup-localstack@v0.2.2
-        if: github.event_name == 'pull_request'
-        with:
-          image-tag: 'latest'
-          install-awslocal: 'true'
-
-      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init -backend=false
+        working-directory: ./terraform
 
       - name: Terraform Validate
         run: terraform validate
+        working-directory: ./terraform
 
-      # Checks that all Terraform configuration files adhere to a canonical format
-      - name: Terraform Format
-        run: terraform fmt -check -recursive
-
-      - name: Terraform Plan
+      - name: Terraform Plan (mocked)
         if: github.event_name == 'pull_request'
         run: |
-          cp -f ../tests/fixtures/terraform.tfvars .
+          cp -f ../tests/fixtures/localstack/versions.tf versions.tf
+          cp -f ../tests/fixtures/fixtures.tfvars .
           terraform plan -out=tfplan
+        working-directory: ./terraform
 
-      # Perform a security scan of the terraform code using checkov
       - name: Run Checkov action
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
           framework: terraform
+        working-directory: ./terraform
 
-      # Upload results to GitHub Advanced Security
       - name: Upload SARIF file
         if: github.ref == 'refs/heads/main' && success()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
           category: checkov
+        working-directory: ./terraform
