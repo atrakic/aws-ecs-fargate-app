@@ -3,19 +3,6 @@ data "aws_availability_zones" "available" {}
 data "aws_region" "current" {}
 
 
-locals {
-  services = {
-    worker = {
-      port         = 8000
-      health_check = "/healthcheck"
-      image        = "ghcr.io/atrakic/aws-worker:latest"
-    }
-    publisher = {
-      image = "ghcr.io/atrakic/aws-publisher:latest"
-    }
-  }
-}
-
 module "ecs" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-ecs.git?ref=3b70e1e46e1b96a2da7fbfe6e2c11d44009607f1"
 
