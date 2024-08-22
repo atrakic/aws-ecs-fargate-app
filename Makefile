@@ -31,8 +31,8 @@ test: docker
 	export AWS_DEFAULT_REGION=us-east-1
 	export AWS_ACCESS_KEY_ID=test
 	export AWS_SECRET_ACCESS_KEY=test
-	cp -f ${BASEDIR}/tests/fixtures/localstack.tf ${BASEDIR}/terraform/versions.tf
-	cp -f ${BASEDIR}/tests/fixtires/fixtures.tfvars ${BASEDIR}/terraform/terraform.tfvars
+	cp -f ${BASEDIR}/tests/fixtures/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
+	cp -f ${BASEDIR}/tests/fixtures/fixtures.tfvars ${BASEDIR}/terraform/fixtures.tfvars
 	${BASEDIR}/scripts/terraform.sh
 	${BASEDIR}/tests/test.sh
 	pytest -v

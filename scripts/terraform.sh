@@ -27,7 +27,7 @@ else
   terraform "${ARGS[*]}" init -upgrade -reconfigure
   terraform "${ARGS[*]}" validate -compact-warnings
   terraform "${ARGS[*]}" fmt -check -recursive
-  terraform "${ARGS[*]}" plan -compact-warnings "${DEPLOY_ARGS[@]}" -out "$BASE_REF".tfplan
+  terraform "${ARGS[*]}" plan -compact-warnings -detailed-exitcode "${DEPLOY_ARGS[@]}" -out "$BASE_REF".tfplan
   terraform "${ARGS[*]}" apply -compact-warnings "$BASE_REF".tfplan
   terraform "${ARGS[*]}" show
   terraform "${ARGS[*]}" output

@@ -27,7 +27,8 @@ resource "tls_private_key" "this" {
 }
 
 resource "tls_self_signed_cert" "this" {
-  count           = var.enabled ? 1 : 0
+  count = var.enabled ? 1 : 0
+
   private_key_pem = tls_private_key.this[0].private_key_pem
   subject {
     common_name         = var.subject.common_name
@@ -46,7 +47,8 @@ resource "tls_self_signed_cert" "this" {
 }
 
 resource "aws_acm_certificate" "this" {
-  count            = var.enabled ? 1 : 0
+  count = var.enabled ? 1 : 0
+
   private_key      = tls_private_key.this[0].private_key_pem
   certificate_body = tls_self_signed_cert.this[0].cert_pem
   tags             = var.tags
