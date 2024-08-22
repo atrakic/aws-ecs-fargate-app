@@ -26,8 +26,6 @@ module "ecs" {
     ecs-demo = {
       cpu        = 1024
       memory     = 4096
-      subnet_ids = module.vpc.private_subnets
-
 
       ## Task Definition
       container_definitions = {
@@ -41,6 +39,10 @@ module "ecs" {
               name  = "AWS_DEFAULT_REGION"
               value = data.aws_region.current.name
             },
+            {
+              name  = "QUEUE_URL"
+              value = module.sqs.queue_url
+            }
           ]
         }
         publisher = {
@@ -62,6 +64,14 @@ module "ecs" {
             {
               name  = "AWS_DEFAULT_REGION"
               value = data.aws_region.current.name
+            },
+            {
+              name  = "TABLE_NAME"
+              value = module.db.table_name
+            },
+            {
+              name  = "TOPIC_ARN"
+              value = module.sns.topic_arn
             }
           ]
         }
