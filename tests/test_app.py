@@ -13,7 +13,7 @@ def test_get_all_items():
 
 
 def test_insert_multiple_items():
-    with open("tests/sample.json", encoding="utf-8") as f:
+    with open("tests/fixtures/sample.json", encoding="utf-8") as f:
         data = json.load(f)
 
     # Send a POST request to the /add endpoint
