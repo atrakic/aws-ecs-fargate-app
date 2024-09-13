@@ -1,5 +1,5 @@
 locals {
-  name = "ecs-fargate-${basename(path.cwd)}"
+  name = "tf-${basename(path.cwd)}"
 
   # Localstack requires license with ECS Fargate
   create_fargate_apps = data.aws_caller_identity.current.account_id != "000000000000" ? true : false

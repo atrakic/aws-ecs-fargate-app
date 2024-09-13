@@ -8,12 +8,9 @@ import boto3
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 aws_region = os.getenv("AWS_DEFAULT_REGION", default="us-east-1")
-sqs_client = boto3.client("sqs", region_name=aws_region)
 
-queue_url = os.getenv(
-    "QUEUE_URL",
-    default="http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/pub-sub",
-)
+queue_url = os.getenv("QUEUE_URL")
+sqs_client = boto3.client("sqs", region_name=aws_region)
 
 
 def delete_message(message, queue_uri):

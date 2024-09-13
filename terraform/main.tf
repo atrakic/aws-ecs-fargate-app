@@ -90,7 +90,7 @@ module "ecs" {
         }
       }
 
-      ## IAM      
+      ## IAM
       tasks_iam_role_name        = "${local.name}-tasks"
       tasks_iam_role_description = "ECS tasks IAM role for ${local.name}"
       tasks_iam_role_policies = {

@@ -2,15 +2,14 @@ services:
   publisher:
     build: ./src/publisher
     container_name: publisher
+    restart: always
     ports:
       - '8000:8000'
     env_file:
       - .env
     environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID-test}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY-test}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
-      - AWS_ENDPOINT_URL=http://localstack:4566
+      - PORT=8000
+      - TOPIC_ARN=arn:aws:sns:us-east-1:000000000000:pub-sub
     depends_on:
       localstack:
         condition: service_healthy
@@ -19,13 +18,11 @@ services:
   worker:
     build: ./src/worker
     container_name: worker
+    restart: always
     env_file:
       - .env
     environment:
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID-test}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY-test}
-      - AWS_ENDPOINT_URL=http://localstack:4566
+      - QUEUE_URL=http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/pub-sub
     logging:
       driver: json-file
       options:

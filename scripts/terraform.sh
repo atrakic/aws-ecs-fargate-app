@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -o errexit
+set -ex errexit
 
 BASE_REF="$(git rev-parse --abbrev-ref HEAD)"
 DIR=terraform
@@ -27,8 +27,8 @@ else
   terraform "${ARGS[*]}" init -upgrade -reconfigure
   terraform "${ARGS[*]}" validate -compact-warnings
   terraform "${ARGS[*]}" fmt -check -recursive
-  terraform "${ARGS[*]}" plan -compact-warnings -detailed-exitcode "${DEPLOY_ARGS[@]}" -out "$BASE_REF".tfplan
-  terraform "${ARGS[*]}" apply -compact-warnings "$BASE_REF".tfplan
+  terraform "${ARGS[*]}" plan -compact-warnings "${DEPLOY_ARGS[@]}" -out "$BASE_REF".tfplan
+  terraform "${ARGS[*]}" apply "$BASE_REF".tfplan
   terraform "${ARGS[*]}" show
   terraform "${ARGS[*]}" output
   terraform "${ARGS[*]}" state list
