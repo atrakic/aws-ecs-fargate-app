@@ -4,12 +4,12 @@ BASEDIR=$(shell git rev-parse --show-toplevel)
 
 APP ?= publisher
 
-.PHONY: all terraform test docker clean healthcheck
+.PHONY: all terraform test docker healthcheck clean
 
-all: terraform
+all: test
 
-terraform:
-	${BASEDIR}/scripts/terraform.sh
+%:
+	docker compose up --build --force-recreate --no-color $@ -d
 
 docker:
 	docker compose up --build --no-deps --remove-orphans -d
@@ -21,16 +21,14 @@ docker:
 	done
 	curl --connect-timeout 5 --retry 5 --retry-delay 0 --retry-max-time 60 http://localhost:8000/
 
-%:
-	docker compose up --build --force-recreate --no-color $@ -d
-
 healthcheck:
 	docker inspect $(APP) --format "{{ (index (.State.Health.Log) 0).Output }}"
 
+terraform:
+	${BASEDIR}/scripts/terraform.sh
+
 test: docker
-	export AWS_DEFAULT_REGION=us-east-1
-	export AWS_ACCESS_KEY_ID=test
-	export AWS_SECRET_ACCESS_KEY=test
+	source .env
 	cp -f ${BASEDIR}/tests/fixtures/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
 	cp -f ${BASEDIR}/tests/fixtures/fixtures.tfvars ${BASEDIR}/terraform/fixtures.tfvars
 	${BASEDIR}/scripts/terraform.sh
@@ -44,6 +42,7 @@ clean:
 	rm -rf ${BASEDIR}/terraform/terraform.tfstate*
 	rm -rf ${BASEDIR}/terraform/*.tfplan
 	#rm -rf ${BASEDIR}/terraform/.terraform
+	rm -rf ${BASEDIR}/terraform/fixtures.tfvars
 	git checkout ${BASEDIR}/terraform/versions.tf
 	docker compose down --remove-orphans -v --rmi local
 
