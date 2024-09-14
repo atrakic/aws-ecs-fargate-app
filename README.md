@@ -21,14 +21,13 @@ This messaging processing application with access to AWS services: SNS, SQS, Dyn
 ## Deployment
 
 ```
-$ cp -f ./terraform/terraform.tfvars.example ./terraform/terraform.tfvars
-$ vim terraform/terraform.tfvars
-$ vim terraform/
-$ DEPLOYMENT_ENVIRONMENT=prod make terraform
+$ export AWS_ACCESS_KEY_ID=
+$ export AWS_SECRET_ACCESS_KEY=
+$ make terraform
 ```
 
 ## Clean up
 
 ```
-$ DEPLOYMENT_ENVIRONMENT=prod make clean
+$ make clean
 ```

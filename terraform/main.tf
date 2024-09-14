@@ -217,7 +217,7 @@ module "alb" {
     https = {
       port            = 443
       protocol        = "HTTPS"
-      certificate_arn = coalesce(var.alb_tls_cert_arn, module.acm.certificate_arn)
+      certificate_arn = coalesce(var.alb_tls_cert_arn, module.acm.acm_certificate_arn)
       forward = {
         target_group_key = "publisher"
       }
