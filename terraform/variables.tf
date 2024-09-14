@@ -9,7 +9,7 @@ variable "create" {
 variable "alb_tls_cert_arn" {
   description = "(Optional) The ARN of the certificate that the ALB uses for https"
   type        = string
-  default     = "arn:aws:acm::123456789012:certificate/tf-acc-test-6453083910015726063"
+  default     = ""
 }
 
 variable "tags" {

@@ -11,12 +11,14 @@ module "ecs" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-ecs.git?ref=3b70e1e46e1b96a2da7fbfe6e2c11d44009607f1"
 
   cluster_name = "${local.name}-ecs-cluster"
-  create       = local.create_fargate_apps
+  create       = (!local.localstack_enabled && var.create) ? true : false
 
   services = {
     ecs-demo = {
       cpu    = 1024
       memory = 4096
+
+      enable_execute_command = true
 
       ## Task Definition
       container_definitions = {
@@ -70,7 +72,7 @@ module "ecs" {
 
       ## Service Discovery
       service_connect_configuration = {
-        namespace = aws_service_discovery_http_namespace.this[0].arn
+        namespace = try(aws_service_discovery_http_namespace.this[0].arn, null)
         service = {
           client_alias = {
             port     = local.container_port
@@ -84,7 +86,7 @@ module "ecs" {
       ## Load Balancer
       load_balancer = {
         service = {
-          target_group_arn = module.alb.target_groups["publisher"].arn
+          target_group_arn = try(module.alb.target_groups["publisher"].arn, null)
           container_name   = local.container_name
           container_port   = local.container_port
         }
@@ -166,15 +168,13 @@ module "ecs" {
     }
   }
 
-  depends_on = [aws_service_discovery_http_namespace.this, module.vpc,
-  module.alb, module.db, module.sns, module.sqs, module.acm, module.wildcard_cert]
   tags = local.tags
 }
 
 module "alb" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-alb.git?ref=349540d1a611cd98a6383cc64ef0d9bf08d88fb7"
 
-  create             = var.create
+  create             = (!local.localstack_enabled && var.create) ? true : false
   name               = "${local.name}-alb"
   load_balancer_type = "application"
 
@@ -217,7 +217,7 @@ module "alb" {
     https = {
       port            = 443
       protocol        = "HTTPS"
-      certificate_arn = var.alb_tls_cert_arn
+      certificate_arn = coalesce(var.alb_tls_cert_arn, module.acm.certificate_arn)
       forward = {
         target_group_key = "publisher"
       }
@@ -368,15 +368,15 @@ module "vpc" {
   tags = local.tags
 }
 
-### CloudMap and ACM
+### Utilities: CloudMap and ACM
 
 data "aws_route53_zone" "this" {
-  count = var.create && var.domain_name != "" ? 1 : 0
+  count = (var.create && var.domain_name != "") ? 1 : 0
   name  = var.domain_name
 }
 
 resource "aws_service_discovery_http_namespace" "this" {
-  count       = var.create ? 1 : 0
+  count       = (!local.localstack_enabled && var.create) ? 1 : 0
   name        = "${local.name}-sdns"
   description = "CloudMap namespace for ${local.name}"
   tags        = local.tags
@@ -385,15 +385,15 @@ resource "aws_service_discovery_http_namespace" "this" {
 module "acm" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-acm.git?ref=0ca52d1497e5a54ed86f9daac0440d27afc0db8b"
 
-  create_certificate = var.create && var.domain_name != "" ? true : false
+  create_certificate = (var.create && var.domain_name != "") ? true : false
   domain_name        = var.domain_name
-  zone_id            = concat(data.aws_route53_zone.this.*.id, [""], )[0]
+  zone_id            = concat(data.aws_route53_zone.this[*].id, [""], )[0]
 }
 
 module "wildcard_cert" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-acm.git?ref=0ca52d1497e5a54ed86f9daac0440d27afc0db8b"
 
-  create_certificate = var.create && var.domain_name != "" ? true : false
+  create_certificate = (var.create && var.domain_name != "") ? true : false
   domain_name        = "*.${var.domain_name}"
-  zone_id            = concat(data.aws_route53_zone.this.*.id, [""], )[0]
+  zone_id            = concat(data.aws_route53_zone.this[*].id, [""], )[0]
 }

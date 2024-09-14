@@ -11,7 +11,7 @@ import aws_dynamodb
 import aws_sts
 import aws_sns
 
-TABLE = os.environ.get("TABLE_NAME", "example")
+TABLE_NAME = os.environ.get("TABLE_NAME", "example")
 TOPIC_ARN = os.environ.get("TOPIC_ARN", "arn:aws:sns:us-east-1:000000000000:pub-sub")
 
 app = Flask(__name__)
@@ -46,7 +46,7 @@ def put_items():
             title = item["title"]
 
             aws_dynamodb.put_dynamodb_item(
-                TABLE,
+                TABLE_NAME,
                 {
                     "id": {"S": unique_id},
                     "artist": {"S": artist},
@@ -75,4 +75,4 @@ def put_items():
 
 @app.route("/getall")
 def get_items():
-    return jsonify(aws_dynamodb.get_dynamodb_items_paginated(TABLE))
+    return jsonify(aws_dynamodb.get_dynamodb_items_paginated(TABLE_NAME))

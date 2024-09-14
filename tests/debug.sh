@@ -16,7 +16,11 @@ opts=(
 aws "${opts[@]}" sts get-caller-identity | cat -
 aws "${opts[@]}" dynamodb list-tables
 aws "${opts[@]}" sns list-topics
+#aws "${opts[@]}" sns list-subscriptions-by-topic --topic-arn arn:aws:sns:us-east-1:000000000000:pub-sub
 aws "${opts[@]}" sns list-subscriptions
 aws "${opts[@]}" sqs list-queues
-#aws "${opts[@]}" s3api list-buckets
-#aws "${opts[@]}" acm list-certificates --max-items 10
+aws "${opts[@]}" s3api list-buckets
+aws "${opts[@]}" acm list-certificates --max-items 10
+
+docker exec -it worker python -c "import os; print (os.environ);"
+docker exec -it publisher python -c "import os; print (os.environ);"

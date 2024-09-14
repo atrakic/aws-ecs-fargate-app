@@ -9,6 +9,7 @@ services:
       - .env
     environment:
       - PORT=8000
+      - TABLE_NAME=tf-aws-ecs-fargate-stack-dynamodb
       - AWS_ENDPOINT_URL=http://localstack:4566
       - TOPIC_ARN=arn:aws:sns:us-east-1:000000000000:pub-sub
     depends_on:
@@ -46,5 +47,4 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
       ##- SERVICES=${SERVICES:-sts,sqs,sns,dynamodb,ec2}
     volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"

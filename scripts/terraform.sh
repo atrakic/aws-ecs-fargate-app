@@ -7,7 +7,7 @@ DIR=terraform
 declare -a ARGS
 ARGS=("-chdir=$DIR")
 
-if [ -z "$DEPLOYMENT_ENVIRONMENT" ]; then
+if [ -n "$DEPLOYMENT_ENVIRONMENT" ]; then
   declare -a DEPLOY_ARGS=(-var-file fixtures.tfvars)
 else
   declare -a DEPLOY_ARGS=()
@@ -25,6 +25,7 @@ else
   # prevent from kill signal
   #trap 'exit 0' SIGINT
   terraform "${ARGS[*]}" init -upgrade -reconfigure
+  terraform "${ARGS[*]}" providers
   terraform "${ARGS[*]}" validate -compact-warnings
   terraform "${ARGS[*]}" fmt -check -recursive
   terraform "${ARGS[*]}" plan -compact-warnings "${DEPLOY_ARGS[@]}" -out "$BASE_REF".tfplan

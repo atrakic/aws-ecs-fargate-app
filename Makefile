@@ -6,7 +6,7 @@ APP ?= publisher
 
 .PHONY: all terraform test docker healthcheck clean
 
-all: test
+all: docker test
 
 %:
 	docker compose up --build --force-recreate --no-color $@ -d
@@ -27,14 +27,14 @@ healthcheck:
 terraform:
 	${BASEDIR}/scripts/terraform.sh
 
-test: docker
-	source .env
+test:
+	docker inspect localstack --format "{{.State.Status}}" | grep -q running || exit 1
+	export $(shell cat .env | grep -v ^# | xargs)
 	cp -f ${BASEDIR}/tests/fixtures/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
 	cp -f ${BASEDIR}/tests/fixtures/fixtures.tfvars ${BASEDIR}/terraform/fixtures.tfvars
-	${BASEDIR}/scripts/terraform.sh
+	DEPLOYMENT_ENVIRONMENT=true ${BASEDIR}/scripts/terraform.sh
 	${BASEDIR}/tests/test.sh
 	pytest -v
-	make clean
 
 clean:
 	# Skip terraform destroy for now
