@@ -37,6 +37,23 @@ module "ecs" {
               value = module.sqs.queue_url
             }
           ]
+          dependencies = [{
+            containerName = "publisher"
+            condition     = "START"
+          }]
+
+          # FIXME
+          /**
+          # enable_cloudwatch_logging = false
+          log_configuration = {
+            logDriver = "awsfirelens"
+            options = {
+              Name                    = "firehose"
+              region                  = data.aws_region.current.name
+              delivery_stream         = "my-stream"
+              log-driver-buffer-limit = "2097152"
+            }
+          }*/
         }
         publisher = {
           cpu       = 512
@@ -48,10 +65,6 @@ module "ecs" {
             containerPort = 8000
             hostPort      = 8000
             protocol      = "tcp"
-          }]
-          dependencies = [{
-            containerName = "worker"
-            condition     = "START"
           }]
           environment = [
             {
@@ -68,7 +81,7 @@ module "ecs" {
             }
           ]
         }
-      }
+      } // container_definitions
 
       ## Service Discovery
       service_connect_configuration = {
