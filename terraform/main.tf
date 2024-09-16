@@ -371,7 +371,7 @@ module "vpc" {
 ### Utilities: CloudMap and ACM
 
 data "aws_route53_zone" "this" {
-  count = (var.create && var.domain_name != "") ? 1 : 0
+  count = (!local.localstack_enabled && var.create && var.domain_name != "") ? 1 : 0
   name  = var.domain_name
 }
 
@@ -385,7 +385,7 @@ resource "aws_service_discovery_http_namespace" "this" {
 module "acm" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-acm.git?ref=0ca52d1497e5a54ed86f9daac0440d27afc0db8b"
 
-  create_certificate = (var.create && var.domain_name != "") ? true : false
+  create_certificate = (!local.localstack_enabled && var.create && var.domain_name != "") ? true : false
   domain_name        = var.domain_name
   zone_id            = concat(data.aws_route53_zone.this[*].id, [""], )[0]
 }
@@ -393,7 +393,7 @@ module "acm" {
 module "wildcard_cert" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-acm.git?ref=0ca52d1497e5a54ed86f9daac0440d27afc0db8b"
 
-  create_certificate = (var.create && var.domain_name != "") ? true : false
+  create_certificate = (!local.localstack_enabled && var.create && var.domain_name != "") ? true : false
   domain_name        = "*.${var.domain_name}"
   zone_id            = concat(data.aws_route53_zone.this[*].id, [""], )[0]
 }
