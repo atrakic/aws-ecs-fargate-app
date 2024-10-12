@@ -228,9 +228,10 @@ module "alb" {
       }
     }
     https = {
-      port            = 443
-      protocol        = "HTTPS"
-      certificate_arn = coalesce(var.alb_tls_cert_arn, module.acm.acm_certificate_arn)
+      port     = 443
+      protocol = "HTTPS"
+      certificate_arn = coalesce(var.alb_tls_cert_arn,
+      module.acm.acm_certificate_arn)
       forward = {
         target_group_key = "publisher"
       }
@@ -384,21 +385,28 @@ module "vpc" {
 ### Utilities: CloudMap and ACM
 
 data "aws_route53_zone" "this" {
-  count = (!local.localstack_enabled && var.create && var.domain_name != "") ? 1 : 0
+  count = (local.localstack_enabled == false && var.create && var.domain_name != "") ? 1 : 0
   name  = var.domain_name
 }
 
 resource "aws_service_discovery_http_namespace" "this" {
-  count       = (!local.localstack_enabled && var.create) ? 1 : 0
+  count       = (local.localstack_enabled == false && var.create) ? 1 : 0
   name        = "${local.name}-sdns"
   description = "CloudMap namespace for ${local.name}"
   tags        = local.tags
 }
 
+/**
+module "self_signed_cert" {
+  source = "./modules/self_signed_cert"
+  count       = (local.localstack_enabled == false && var.create) ? 1 : 0
+}
+*/
+
 module "acm" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-acm.git?ref=0ca52d1497e5a54ed86f9daac0440d27afc0db8b"
 
-  create_certificate = (!local.localstack_enabled && var.create && var.domain_name != "") ? true : false
+  create_certificate = (local.localstack_enabled == false && var.create && var.domain_name != "") ? true : false
   domain_name        = var.domain_name
   zone_id            = concat(data.aws_route53_zone.this[*].id, [""], )[0]
 }
@@ -406,7 +414,7 @@ module "acm" {
 module "wildcard_cert" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-acm.git?ref=0ca52d1497e5a54ed86f9daac0440d27afc0db8b"
 
-  create_certificate = (!local.localstack_enabled && var.create && var.domain_name != "") ? true : false
+  create_certificate = (local.localstack_enabled == false && var.create && var.domain_name != "") ? true : false
   domain_name        = "*.${var.domain_name}"
   zone_id            = concat(data.aws_route53_zone.this[*].id, [""], )[0]
 }

@@ -59,5 +59,12 @@ resource "aws_acm_certificate" "this" {
 }
 
 output "acm_certificate_arn" {
-  value = join("", [for i in aws_acm_certificate.this : i.id])
+  description = "The ARN of the certificate"
+  //value = join("", [for i in aws_acm_certificate.this : i.id])
+  value = try(aws_acm_certificate.this[0].arn, "")
+}
+
+output "acm_certificate_status" {
+  description = "Status of the certificate."
+  value       = try(aws_acm_certificate.this[0].status, "")
 }

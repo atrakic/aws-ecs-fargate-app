@@ -4,9 +4,9 @@ BASEDIR=$(shell git rev-parse --show-toplevel)
 
 APP ?= publisher
 
-.PHONY: all terraform test docker healthcheck clean
+.PHONY: all terraform test gotest docker healthcheck clean
 
-all: docker test
+all: docker terraform test
 
 %:
 	docker compose up --build --force-recreate --no-color $@ -d
@@ -19,6 +19,7 @@ docker:
 		echo "waiting for $(APP) ..."; \
 		sleep 1; \
 	done
+	docker inspect localstack --format "{{.State.Status}}" | grep -q running || exit 1
 	curl --connect-timeout 5 --retry 5 --retry-delay 0 --retry-max-time 60 http://localhost:8000/
 
 healthcheck:
@@ -28,13 +29,17 @@ terraform:
 	${BASEDIR}/scripts/terraform.sh
 
 test:
-	docker inspect localstack --format "{{.State.Status}}" | grep -q running || exit 1
 	export $(shell cat .env | grep -v ^# | xargs)
-	cp -f ${BASEDIR}/tests/fixtures/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
-	cp -f ${BASEDIR}/tests/fixtures/fixtures.tfvars ${BASEDIR}/terraform/fixtures.tfvars
 	DEPLOYMENT_ENVIRONMENT=true ${BASEDIR}/scripts/terraform.sh
 	${BASEDIR}/tests/test.sh
 	pytest -v
+
+gotest: _pre
+	pushd tests; go test ./... -v; popd
+
+_pre:
+	cp -f ${BASEDIR}/tests/fixtures/localstack/versions.tf ${BASEDIR}/terraform/versions.tf
+	cp -f ${BASEDIR}/tests/fixtures/fixtures.tfvars ${BASEDIR}/terraform/fixtures.tfvars
 
 clean:
 	# Skip terraform destroy for now
